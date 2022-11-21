@@ -48,7 +48,7 @@ const checkUser = async (req, res) => { //check the user have acc.
             console.log('Unable to get the User. Error : ', JSON.stringify(err, null, 2));
             res.status(500).json({ msg : err});
         } else {
-            console.log('Check item successed : ', data);
+            //console.log('Check item successed : ', data);
             if (data.Count == 0) {
                 res.status(200).json({ 'have' : false })
             }else{
@@ -91,7 +91,7 @@ const getUserDetail =  async (req, res) => { //get the user by id
     docClient.get(params, (err, data) => {
         if (err) {
             console.log('Unable to get the User. Error : ', JSON.stringify(err, null, 2));
-            res.status(500).json({ msg : error});
+            res.status(500).json({ msg : err});
         } else {
             //console.log('Get item successed : ', data);
             res.status(200).json({data});

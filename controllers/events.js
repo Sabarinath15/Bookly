@@ -1,69 +1,118 @@
-const Event = require('../models/event');
+const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
+
+AWS.config.update({
+    region : 'local',
+    endpoint : 'http://localhost:8000',
+}); //config region and endpoint
+
+var docClient = new AWS.DynamoDB.DocumentClient(); //instance of doc client
 
 const createEvent = async (req, res) => {
-    try {
-        const event = await Event.create(req.body);
-        res.status(201).json({event});
-    } catch (error) {
-        res.status(500).json({ msg : error});
+    var id = uuidv4();
+    var params = {
+        TableName : 'Events',
+        Item : {
+            "id" : id,
+            "userId" : req.body.userId,
+            "event" : req.body,
+        }
     }
+    docClient.put(params, (err, data) => {
+        if (err) {
+            console.log('Error : Cannot put item : ', JSON.stringify(err, null, 2));
+            res.status(500).json({ msg : err});
+        } else {
+            console.log('New Event created successfully... ');
+            res.status(201).json({id});
+        }
+    });
 }
 
-const getEventsById = async (req, res) => {
-    try {
-        const { id : createrId} = req.params;
-        const events = await Event.find({createrId : createrId});
-        res.status(200).json({events});
-    } catch (error) {
-        res.status(500).json({ msg : error});
+const getEventByUserId = async (req, res) => {
+    const { id : id} = req.params;
+    var params = {
+        TableName : 'Events',
+        IndexName : 'user_id',
+        KeyConditionExpression : 'userId = :id', 
+        ExpressionAttributeValues : {
+            ':id' : id,        
+        }
     }
+
+    docClient.query(params, (err, data) => {
+        if (err) {
+            console.log('Unable to get the User. Error : ', JSON.stringify(err, null, 2));
+            res.status(500).json({ msg : err});
+        } else {
+            //console.log('Events : ', data);
+            res.status(200).json({ data });
+        }
+    })
 }
 
 const getAllEvents = async (req, res) => {
-    try {
-        const events = await Event.find();
-        res.status(200).json({events});
-    } catch (error) {
-        res.status(500).json({ msg : error});
+    params = {
+        TableName : 'Events',
     }
+        
+    docClient.scan(params, (err, data) => {
+        if (err) {
+            console.log('Unable to scan the table. Error :', JSON.stringify(err));
+            res.status(500).json({ msg : err});
+        } else {
+            console.log('Scanning success...');
+            res.status(200).json({ data });
+        }
+    });
 }
 
 const getEventById = async (req, res) => {
-    try {
-        const { id : eventId} = req.params;
-        const event = await Event.find({_id : eventId});
-        res.status(200).json({event});
-    } catch (error) {
-        res.status(500).json({ msg : error});
-    }
+    const { id : id} = req.params;
+    var params = {
+        TableName : 'Events',
+        Key : {
+            'id' : id,
+        }
+    };
+
+    docClient.get(params, (err, data) => {
+        if (err) {
+            console.log('Unable to scan the table. Error :', JSON.stringify(err));
+            res.status(500).json({ msg : err});
+        } else {
+            //console.log('Event by Id :', data);
+            res.status(200).json({ data });
+        }
+    });
 }
 
-const deleteEventById = async (req, res) => {
-    try {
-        const { id : eventId} = req.params;
-        const event = await Event.deleteOne({_id : eventId});
-        res.status(200).json({event});
-    } catch (error) {
-        res.status(500).json({ msg : error});
-    }
-}
+// const deleteEventById = async (req, res) => {
+//     try {
+//         const { id : eventId} = req.params;
+//         const event = await Event.deleteOne({_id : eventId});
+//         res.status(200).json({event});
+//     } catch (error) {
+//         res.status(500).json({ msg : error});
+//     }
+// }
 
-const updateEventById = async (req, res) => {
-    try {
-        const { id : eventId } = req.params;
-        const event = await Event.findOneAndUpdate({ _id : eventId }, req.body);
-        res.status(200).json({event});
-    } catch (error) {
-        res.status(500).json({ msg : error});
-    }
-}
+// const updateEventById = async (req, res) => {
+//     try {
+//         const { id : eventId } = req.params;
+//         const event = await Event.findOneAndUpdate({ _id : eventId }, req.body);
+//         res.status(200).json({event});
+//     } catch (error) {
+//         res.status(500).json({ msg : error});
+//     }
+// }
 
 
 module.exports = {
     createEvent,
-    getEventsById,
-    getAllEvents,
     getEventById,
-    deleteEventById,
-    updateEventById,
+    getAllEvents,
+    getEventByUserId,
+    // deleteEventById,
+    // updateEventById,
 }
