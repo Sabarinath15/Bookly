@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookly</title>
+
+    <link rel="stylesheet" href="../assets/css/event.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://kit.fontawesome.com/7a2020c144.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="popup">
+        <div class="detailform">
+            <div class="info">
+                <h2 id="event-Name"></h2>
+                <p id="creater-Name"></p>
+                <p id="event-Duration"></p>
+                <div class="slotinfo">
+                    <h1 id="slottime"></h1>
+                    <p id="slotdate"></p>
+                </div>
+            </div>
+            <div class="form">
+                <form onsubmit="return false" id="userDetail">
+                    <h2>Details Form</h2>
+                    <p>Please fill your details.</p>
+                    <span id="bookingerror">Something went wrong, please try again later.</span>
+                    <div class="formwrapper">
+                        <label for="name">Name</label>
+                        <input type="text" name="name" id="name" placeholder="eg. John Doe" onchange="OnChange()">
+                        <span id="nameErr">The name must be filled.</span>
+                    </div>
+                    <div class="formwrapper">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" placeholder="eg. johndoe@gmail.com" onchange="OnChange()">
+                        <span id="emailErr">The email must be filled.</span>
+                    </div>
+                    <div class="formwrapper">
+                        <label for="mobilNo">Contact Number</label>
+                        <input type="text" name="mobilNo" id="mobilNo" placeholder="" onchange="OnChange()">
+                        <span id="mblNoErr">The contact number must be filled.</span>
+                    </div>
+                    <div class="formbuttons">
+                        <button id="cancel">cancel</button>
+                        <input type="submit" value="Book">
+                    </div>
+                </form>
+                <div class="successmsg">
+                    <i class="fa-regular fa-circle-check"></i>
+                    <p>Slots has been booked successfully.</p>
+                    <span>You will automatically redirect to the home page.</span>
+                </div>
+            </div>
+        </div>
+        <div class="blurBg"></div>
+    </div>
+    <header>
+        <button onclick="location.href = './events.html'"><i class="fa-solid fa-angle-left"></i> Back</button>
+        <h1><span>B</span>ookly</h1>
+        <span></span>
+    </header>
+    <main>
+        <div class="details">
+            <h2 id="eventName"></h2>
+            <p id="createrName"></p>
+            <p id="eventDuration"></p>
+        </div>
+        <div class="wrapper">
+            <p>Select a Date</p>
+            <header>
+                <p class="current-date"></p>
+                <div class="icons">
+                    <i id="prev" class="fa-sharp fa-solid fa-angle-left"></i>
+                    <i id="next" class="fa-sharp fa-solid fa-angle-right"></i>
+                </div>
+              </header>
+              <div class="calendar">
+                <ul class="weeks">
+                  <li>Sun</li>
+                  <li>Mon</li>
+                  <li>Tue</li>
+                  <li>Wed</li>
+                  <li>Thu</li>
+                  <li>Fri</li>
+                  <li>Sat</li>
+                </ul>
+                <ul class="days"></ul>
+              </div>
+              <button id="bookingform">Book</button>
+              <span id="slot-err">Please select a slot.</span>
+        </div>
+        <div class="slotsCon">
+            <p>Slots Available</p>
+            <span id="selectedDate"></span>
+            <div id="slots" class="slots"></div>
+        </div>
+    </main>
+    <script src="../script/event.js"></script>
+</body>
+</html>

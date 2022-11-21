@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://kit.fontawesome.com/7a2020c144.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="popup">
+        <div class="content">
+            
+        </div>
+        <div class="blurBg"></div>
+    </div>
+    <header>
+        <h1><span>B</span>ookly</h1>
+        <div class="wrapper">
+            <div class="buttons">
+                <button id="create"><i class="fa-regular fa-plus"></i> Create</button>
+                <button id="profile"><i class="fa-regular fa-user"></i></button>
+            </div>
+            <div class="profileCard">
+                <img src="../assets/images/user.png" alt="">
+                <h4 id="userName"></h4>
+                <p id="userEmail"></p>
+                <button id="logout-btn">Logout</button>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="eventCont"> <!-- event Container for adding events -->
+            <h2>Events Secheduled</h2>
+            <p>#<span id="eventcount">0</span> events are alive.</p>
+            <div class="events"> 
+                <div class="info">
+                    <p>No events are created.</p>
+                    <p>Go and create your event...</p>
+                </div>
+            </div>
+        </div>
+        <div class="slotsCont">
+            <h2>Booked slots</h2>
+            <div class="slots center" id="slots">
+                <div class="slotinfo">
+                    <p>Click the details button to view slots.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="../script/dashboard.js"></script>
+</body>
+</html>

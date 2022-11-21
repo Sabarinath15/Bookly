@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create event</title>
+    <link rel="stylesheet" href="../assets/css/createevent.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://kit.fontawesome.com/7a2020c144.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <header>
+        <button onclick="location.href ='./dashboard.html'"><i class="fa-solid fa-angle-left"></i> Dashboard</button>
+        <h1><span>B</span>ookly</h1>
+        <span></span>
+    </header>
+    <main>
+        <div class="popup">
+            <div>
+                <h1>Successfull!</h1>
+                <p>Event was created and scheduled successfully.</p>
+            </div>
+            <button onclick="location.href ='./dashboard.html'">Ok</button>
+        </div>
+        <div class="blur"></div>
+        <form onsubmit="return false" id="form">
+            <div class="wrapper">
+                <label for="eventName">Event Name</label><br>
+                <input type="text" name="eventName" id="eventName" placeholder="eg. Delivery pickup" onchange="onChangeInputs()"><br>
+                <span id="nameErr">The event name must be filled.</span>
+                <p class="helptext">This is the name of your event.</p>
+            </div>
+            <div class="wrapper">
+                <label for="duration">Duration</label><br>
+                <div class="duration-box">
+                    <input type="text" name="duration" id="duration" placeholder="eg. 30 minutes" onchange="onChangeInputs()">
+                    <select name="time-format" id="time-format">
+                        <option value="min">Minutes</option>
+                        <option value="hr">Hour</option>
+                    </select>
+                </div>
+                <span id="durationErr">The duration must be filled.</span>
+                <p class="helptext">This is the time period of your on slot.</p>
+            </div>
+            <div class="wrapper dateCon">
+                <div>
+                    <label for="start-date">Starting Date</label><br>
+                    <input type="date" name="start-date" id="start-date" onchange="onChangeInputs()"><br>
+                    <span id="startDateErr">The date must be filled.</span>
+                    <p class="helptext">This is the starting date of your event.</p>
+                </div>
+                <div>
+                    <label for="no-of-days">No. of days</label><br>
+                    <input type="number" name="no-of-days" id="no-of-days" min="1" max="60" placeholder="eg. 30 days" onchange="onChangeInputs()"><br>
+                    <span id="daysErr">The no. of days must be filled.</span>
+                    <p class="helptext">This is no. of days of your event</p>
+                </div>
+            </div>
+            <div class="workingCon wrapper">
+                <label>Working days</label>
+                <span id="timeErr">The ending time must be greater than starting time.</span>
+                <p class="helptext">This is working days and hours of your event.</p>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="sun" id="sun" onchange="enableTime('sun')">
+                    <label for="sun">Sunday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="sun-start-time" min="06:00" max="22:00" value="09:00" disabled>
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="sun-end-time" min="06:00" max="22:00" value="18:00" disabled>
+                    </div>
+                </div>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="mon" id="mon" checked onchange="enableTime('mon')">
+                    <label for="MON">Monday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="mon-start-time" min="00:00" max="24:00" value="09:00">
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="mon-end-time" min="00:00" max="24:00" value="18:00" onchange="checkTime('mon')">
+                    </div>
+                </div>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="tue" id="tue" checked onchange="enableTime('tue')">
+                    <label for="tue">Tuesday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="tue-start-time" min="06:00" max="22:00" value="09:00">
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="tue-end-time" min="06:00" max="22:00" value="18:00">
+                    </div>
+                </div>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="wed" id="wed" checked onchange="enableTime('wed')">
+                    <label for="wed">Wednesday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="wed-start-time" min="06:00" max="22:00" value="09:00">
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="wed-end-time" min="06:00" max="22:00" value="18:00">
+                    </div>
+                </div>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="thu" id="thu" checked onchange="enableTime('thu')">
+                    <label for="thu">Thursday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="thu-start-time" min="06:00" max="22:00" value="09:00">
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="thu-end-time" min="06:00" max="22:00" value="18:00">
+                    </div>
+                </div>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="fri" id="fri" checked onchange="enableTime('fri')">
+                    <label for="fri">Friday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="fri-start-time" min="06:00" max="22:00" value="09:00">
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="fri-end-time" min="06:00" max="22:00" value="18:00">
+                    </div>
+                </div>
+                <div class="working-box">
+                    <input type="checkbox" name="day" value="sat" id="sat" onchange="enableTime('sat')">
+                    <label for="sat">Saturday</label>
+                    <div class="time-box">
+                        <input type="time" name="start-time" id="sat-start-time" min="06:00" max="22:00" value="09:00" disabled>
+                        <h6>to</h6>
+                        <input type="time" name="end-time" id="sat-end-time" min="06:00" max="22:00" value="18:00" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <button onclick="location.href ='./dashboard.html'">Cancel</button>
+                <input type="submit" value="Create">
+            </div>
+        </form>
+    </main>
+
+    <script src="../script/createevent.js"></script>
+</body>
+</html>
