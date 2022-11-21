@@ -1,0 +1,13 @@
+***Commands for the DB***
+
+1. Run the aws dynamo DB
+
+java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb
+
+2. AWS config
+
+aws configure
+
+3. Listing tables in DB
+
+aws dynamodb list-tables --endpoint-url http://localhost:8000

@@ -55,7 +55,8 @@ createForm.addEventListener('submit', async (e) => {
                     email : email.value,
                     password : password.value
                 }); //Store the valid user data
-                sessionStorage.setItem('userId', JSON.stringify(user.data['user']['_id'])); // storing the user id in local
+                console.log(user);
+                sessionStorage.setItem('userId', JSON.stringify(user.data.id)); // storing the user id in local
                 createError.style.display = 'none';
                 location.href = '../pages/dashboard.html'; //navigate to dashboard
             }else{
@@ -68,6 +69,7 @@ createForm.addEventListener('submit', async (e) => {
             }
         } catch (error) {
             createError.innerHTML = 'Something went wrong, try again later';
+            console.log(error);
             createError.style.display = 'block';
             orgName.value = '';
             email.value = '';
@@ -85,9 +87,10 @@ loginForm.addEventListener('submit', async (e) => {
         try {
             const haveAcc = await axios.get(`/account/checkuser/${logEmail.value}`); //checking the user has account
             if (haveAcc.data.have) {
-                const user = await axios.get(`/account/user/${logEmail.value}`); //get the user details
-                if (user.data['user']['password'] == logPassword.value && user.data['user']['email'] == logEmail.value) {
-                    sessionStorage.setItem('userId', JSON.stringify(user.data['user']['_id'])); //store the user id in local
+                var user = await axios.get(`/account/user/${logEmail.value}`); //get the user details
+                user = user.data.data.Items[0];
+                if (user.password == logPassword.value && user.email == logEmail.value) {
+                    sessionStorage.setItem('userId', JSON.stringify(user['id'])); //store the user id in local
                     loginError.style.display = 'none';
                     location.href = '../pages/dashboard.html'; //navigate to dashboard
                 }else{
@@ -102,6 +105,7 @@ loginForm.addEventListener('submit', async (e) => {
             }
         } catch (error) {
             loginError.innerHTML = 'Something went wrong, try again later';
+            console.log(error);
             loginError.style.display = 'block';
             logEmail.value = '';
             logPassword.value = '';
