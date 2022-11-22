@@ -118,53 +118,53 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 
 //Slots table creation
 
-var params = {
+// var params = {
     
-    TableName : 'Slots',
-    KeySchema : [
-        {
-            AttributeName : 'id',
-            KeyType : 'HASH',
-        }
-    ],
-    AttributeDefinitions : [
-        {
-            AttributeName : 'id',
-            AttributeType : 'S',
-        },
-        {
-            AttributeName : 'eventId',
-            AttributeType : 'S',
-        },
-    ],
-    ProvisionedThroughput : {
-        ReadCapacityUnits : 10,
-        WriteCapacityUnits : 10,
-    },
-    GlobalSecondaryIndexes : [
-        {
-            IndexName : 'event_id',
-            KeySchema : [
-                {
-                    AttributeName : 'eventId',
-                    KeyType : 'HASH',
-                }
-            ],
-            Projection : {
-                ProjectionType : 'ALL',
-            },
-            ProvisionedThroughput : {
-                ReadCapacityUnits : 10,
-                WriteCapacityUnits : 10,
-            },
-        }
-    ]
-};
+//     TableName : 'Slots',
+//     KeySchema : [
+//         {
+//             AttributeName : 'id',
+//             KeyType : 'HASH',
+//         }
+//     ],
+//     AttributeDefinitions : [
+//         {
+//             AttributeName : 'id',
+//             AttributeType : 'S',
+//         },
+//         {
+//             AttributeName : 'eventId',
+//             AttributeType : 'S',
+//         },
+//     ],
+//     ProvisionedThroughput : {
+//         ReadCapacityUnits : 10,
+//         WriteCapacityUnits : 10,
+//     },
+//     GlobalSecondaryIndexes : [
+//         {
+//             IndexName : 'event_id',
+//             KeySchema : [
+//                 {
+//                     AttributeName : 'eventId',
+//                     KeyType : 'HASH',
+//                 }
+//             ],
+//             Projection : {
+//                 ProjectionType : 'ALL',
+//             },
+//             ProvisionedThroughput : {
+//                 ReadCapacityUnits : 10,
+//                 WriteCapacityUnits : 10,
+//             },
+//         }
+//     ]
+// };
 
-dynamoDb.createTable(params, (err, data) => {
-    if (err) {
-        console.log('Unable to create the table. Error : ', JSON.stringify(err, null, 2));
-    } else {
-        console.log('Slots Table created successfully... ');
-    }
-});
+// dynamoDb.createTable(params, (err, data) => {
+//     if (err) {
+//         console.log('Unable to create the table. Error : ', JSON.stringify(err, null, 2));
+//     } else {
+//         console.log('Slots Table created successfully... ');
+//     }
+// });
