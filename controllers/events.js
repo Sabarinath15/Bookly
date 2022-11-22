@@ -23,7 +23,7 @@ const createEvent = async (req, res) => {
             console.log('Error : Cannot put item : ', JSON.stringify(err, null, 2));
             res.status(500).json({ msg : err});
         } else {
-            console.log('New Event created successfully... ');
+            //console.log('New Event created successfully... ');
             res.status(201).json({id});
         }
     });
@@ -45,10 +45,11 @@ const getEventByUserId = async (req, res) => {
             console.log('Unable to get the User. Error : ', JSON.stringify(err, null, 2));
             res.status(500).json({ msg : err});
         } else {
-            //console.log('Events : ', data);
-            res.status(200).json({ data });
+            //console.log('Events : ', data.Items);
+            var items = data.Items;
+            res.status(200).json({ items });
         }
-    })
+    });
 }
 
 const getAllEvents = async (req, res) => {
@@ -61,7 +62,7 @@ const getAllEvents = async (req, res) => {
             console.log('Unable to scan the table. Error :', JSON.stringify(err));
             res.status(500).json({ msg : err});
         } else {
-            console.log('Scanning success...');
+            //console.log('Scanning success...');
             res.status(200).json({ data });
         }
     });
@@ -87,25 +88,49 @@ const getEventById = async (req, res) => {
     });
 }
 
-// const deleteEventById = async (req, res) => {
-//     try {
-//         const { id : eventId} = req.params;
-//         const event = await Event.deleteOne({_id : eventId});
-//         res.status(200).json({event});
-//     } catch (error) {
-//         res.status(500).json({ msg : error});
-//     }
-// }
+const deleteEventById = async (req, res) => {
+    const { id : id} = req.params;
+    var params = {
+        TableName : 'Events',
+        Key : {
+            'id' : id,
+        },
+    }
 
-// const updateEventById = async (req, res) => {
-//     try {
-//         const { id : eventId } = req.params;
-//         const event = await Event.findOneAndUpdate({ _id : eventId }, req.body);
-//         res.status(200).json({event});
-//     } catch (error) {
-//         res.status(500).json({ msg : error});
-//     }
-// }
+    docClient.delete(params, (err, data) => {
+        if (err) {
+            console.log('Unable to delete the event. Error :', JSON.stringify(err));
+            res.status(500).json({ msg : err});
+        } else {
+            res.status(200).json({ data });
+        }
+    });
+}
+
+const updateEventById = async (req, res) => {
+    const { id : id} = req.params;
+    var params = {
+        TableName : 'Events',
+        Key : {
+            'id' : id,
+        },
+        UpdateExpression: "set event = :body",
+        ExpressionAttributeValues:{
+            ":body" : req.body,
+        },
+        ReturnValues:"UPDATED_NEW"
+    }
+
+    docClient.update(params, (err, data) => {
+        if (err) {
+            console.log('Unable to update the event. Error :', JSON.stringify(err));
+            res.status(500).json({ msg : err});
+        } else {
+            //console.log('Event Updated...');
+            res.status(200).json({ data });
+        }
+    });
+}
 
 
 module.exports = {
@@ -113,6 +138,6 @@ module.exports = {
     getEventById,
     getAllEvents,
     getEventByUserId,
-    // deleteEventById,
-    // updateEventById,
+    deleteEventById,
+    updateEventById,
 }

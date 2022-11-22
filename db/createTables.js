@@ -64,9 +64,63 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 
 //Events table creation
 
-params = {
+// var params = {
     
-    TableName : 'Events',
+//     TableName : 'Events',
+//     KeySchema : [
+//         {
+//             AttributeName : 'id',
+//             KeyType : 'HASH',
+//         }
+//     ],
+//     AttributeDefinitions : [
+//         {
+//             AttributeName : 'id',
+//             AttributeType : 'S',
+//         },
+//         {
+//             AttributeName : 'userId',
+//             AttributeType : 'S',
+//         },
+//     ],
+//     ProvisionedThroughput : {
+//         ReadCapacityUnits : 10,
+//         WriteCapacityUnits : 10,
+//     },
+//     GlobalSecondaryIndexes : [
+//         {
+//             IndexName : 'user_id',
+//             KeySchema : [
+//                 {
+//                     AttributeName : 'userId',
+//                     KeyType : 'HASH',
+//                 }
+//             ],
+//             Projection : {
+//                 ProjectionType : 'ALL',
+//             },
+//             ProvisionedThroughput : {
+//                 ReadCapacityUnits : 10,
+//                 WriteCapacityUnits : 10,
+//             },
+//         }
+//     ]
+// };
+
+// dynamoDb.createTable(params, (err, data) => {
+//     if (err) {
+//         console.log('Unable to create the table. Error : ', JSON.stringify(err, null, 2));
+//     } else {
+//         console.log('Events Table created successfully... ');
+//     }
+// });
+
+
+//Slots table creation
+
+var params = {
+    
+    TableName : 'Slots',
     KeySchema : [
         {
             AttributeName : 'id',
@@ -79,7 +133,7 @@ params = {
             AttributeType : 'S',
         },
         {
-            AttributeName : 'userId',
+            AttributeName : 'eventId',
             AttributeType : 'S',
         },
     ],
@@ -89,10 +143,10 @@ params = {
     },
     GlobalSecondaryIndexes : [
         {
-            IndexName : 'user_id',
+            IndexName : 'event_id',
             KeySchema : [
                 {
-                    AttributeName : 'userId',
+                    AttributeName : 'eventId',
                     KeyType : 'HASH',
                 }
             ],
@@ -111,38 +165,6 @@ dynamoDb.createTable(params, (err, data) => {
     if (err) {
         console.log('Unable to create the table. Error : ', JSON.stringify(err, null, 2));
     } else {
-        console.log('Events Table created successfully... ');
+        console.log('Slots Table created successfully... ');
     }
 });
-
-
-// //Slots table creation
-
-// params = {
-    
-//     TableName : 'Slots',
-//     KeySchema : [
-//         {
-//             AttributeName : 'id',
-//             KeyType : 'HASH',
-//         }
-//     ],
-//     AttributeDefinitions : [
-//         {
-//             AttributeName : 'id',
-//             AttributeType : 'S',
-//         }
-//     ],
-//     ProvisionedThroughput : {
-//         ReadCapacityUnits : 10,
-//         WriteCapacityUnits : 10,
-//     }
-// };
-
-// dynamoDb.createTable(params, (err, data) => {
-//     if (err) {
-//         console.log('Unable to create the table. Error : ', JSON.stringify(err, null, 2));
-//     } else {
-//         console.log('Slots Table created successfully... ');
-//     }
-// })

@@ -51,9 +51,9 @@ createForm.addEventListener('submit', async (e) => {
             const haveAcc = await axios.get(`/account/checkuser/${email.value}`); //checking the user has account
             if (!haveAcc.data.have) {
                 const user = await axios.post('/account/newuser', {
-                    name : orgName.value,
-                    email : email.value,
-                    password : password.value
+                    "name" : orgName.value,
+                    "email" : email.value,
+                    "password" : password.value
                 }); //Store the valid user data
                 console.log(user);
                 sessionStorage.setItem('userId', JSON.stringify(user.data.id)); // storing the user id in local

@@ -12,7 +12,8 @@ var info = document.querySelector('.info'); //info
 const fetchEvents = async () => {
     try {
         var events = await axios.get('/events/');
-        displayEvents(events.data.events);
+        events = events.data.data.Items;
+        displayEvents(events);
     } catch (error) {
         console.log(error);
     }
@@ -25,18 +26,18 @@ const displayEvents = (events) => {
         eventsCon.classList.add('grid');
     }
     var htmlevents = events.map((event) => {
-        var time = getTime(event.duration, event.durationFormat);
+        var time = getTime(event.event.duration, event.event.durationFormat);
         return `
         <div class="event">
             <div class="title">
-                <h2>${event.eventName}</h2>
+                <h2>${event.event.eventName}</h2>
             </div>
             <div class="text">
-                <h4>${event.createrName}</h4>
+                <h4>${event.event.createrName}</h4>
                 <p><i class="fa-regular fa-clock"></i> ${time.duration} ${time.format}</p>
             </div>
             <div class="button">
-                <button onclick="showEvent('${event._id}')">Book</button>
+                <button onclick="showEvent('${event.id}')">Book</button>
             </div>
         </div>`
     });

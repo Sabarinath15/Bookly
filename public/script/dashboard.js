@@ -33,7 +33,7 @@ var userEmail = document.querySelector('#userEmail');
 const fetchEvents = async (createrId) => {
     try {
         var events = await axios.get(`/events/${createrId}`);
-        displayEvents(events.data.events);
+        displayEvents(events.data.items);
     } catch (error) {
         console.log(error);
     }
@@ -42,7 +42,7 @@ const fetchEvents = async (createrId) => {
 const fetchUser = async (userId) => {
     try {
         var user = await axios.get(`/account/userdetail/${userId}`);
-        user = user.data.user;
+        user = user.data.data.Item;
         userName.innerHTML = user.name;
         userEmail.innerHTML = user.email;
     } catch (error) {
@@ -56,10 +56,12 @@ const displayEvents = (events) => {
         eventCount.innerHTML = events.length;
     }
     var htmlevents = events.map((event) => {
+        var eventId = event.id;
+        event = event.event;
         var date = genDate(event.startDate, event.noOfDays);
         var time = getTime(event.duration, event.durationFormat);
         return `
-        <div class="event" id="${event._id}">
+        <div class="event" id="${eventId}">
             <h4>${event.eventName}</h4>
             <div class="dateinfo">
                 <p><i class="fa-regular fa-calendar"></i> From <span>${date.startDate} ${date.startMon} ${date.startYear}</span></p>
@@ -69,9 +71,9 @@ const displayEvents = (events) => {
                 <p><i class="fa-regular fa-clock"></i> <span>${time.duration} ${time.format}</span></p>
             </div>
             <div class="event-btns">
-                <button id="details" onclick="eventDetail('${event._id}')">Details</button>
-                <button id="edit" onclick="editEvent('${event._id}')">Edit</button>
-                <button id="delete" onclick="deleteEvent('${event._id}')"><i class="fa-solid fa-trash-can"></i></button>
+                <button id="details" onclick="eventDetail('${eventId}')">Details</button>
+                <button id="edit" onclick="editEvent('${eventId}')">Edit</button>
+                <button id="delete" onclick="deleteEvent('${eventId}')"><i class="fa-solid fa-trash-can"></i></button>
             </div>
         </div>`
     }); 
@@ -161,7 +163,7 @@ var prevClick = '';
 const eventDetail = async (eventId) => {
     try {
         var slots = await axios.get(`/slots/${eventId}`);
-        slots = slots.data.slots;
+        slots = slots.data.items;
         displaySlots(slots);
         if (prevClick != '') {
             var prev = document.getElementById(prevClick);
@@ -194,11 +196,12 @@ const displaySlots = (slots) => {
     slotsCon.classList.remove('center');
     slotsCon.classList.add('grid');
     var htmlslots = slots.map((slot) => {
+        slot = slot.slot;
         var date = new Date(slot.slotDate);
         return `<div class="slot">
             <div class="customerinfo">
                 <h3>${slot.name}</h3>
-                <p><i class="fa-solid fa-envelope"></i>${slot.email}</p>
+                <p><i class="fa-solid fa-envelope"></i> ${slot.email}</p>
                 <p><i class="fa-solid fa-phone"></i> ${slot.contact}</p>
             </div>
             <div class="time">
@@ -222,7 +225,7 @@ const isBooked = async (eventId) => {
     } catch (error) {
         console.log(error);
     }
-    if (slots.data.slots.length == 0) {
+    if (slots.data.items.length == 0) {
         return true;
     }
     return false;

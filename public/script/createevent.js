@@ -36,7 +36,7 @@ var blurBg = document.querySelector('.blur');
 const editForm = async (eventId) => {
     try {
         var event = await axios.get(`/events/event/${eventId}`);
-        event = event.data.event[0];
+        event = event.data.data.Item.event;
         changeFileds(event);
     } catch (error) {
         console.log(error);
@@ -44,11 +44,11 @@ const editForm = async (eventId) => {
 }
 
 const changeFileds = (event) => {
-    var date = new Date(event.startDate);
+    var date = dateformat(event.startDate);
     eventName.value = event.eventName;
     duration.value = event.duration;
     timeFormat.value = event.durationFormat;
-    startDate.value = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    startDate.value = date;
     noOfDays.value = event.noOfDays;
     for (const day in event.workingDays) {
         var input = document.querySelector(`#${day}`);
@@ -58,6 +58,22 @@ const changeFileds = (event) => {
         start_time.value = event.workingDays[day]['start-time'];
         end_time.value = event.workingDays[day]['end-time'];
     }
+}
+
+//date format
+const dateformat = (startDate) => {
+    var date = new Date(startDate);
+    var _date = date.getDate();
+    var month = date.getMonth();
+    month += 1;
+    var year = date.getFullYear();
+    if (_date < 10) {
+        _date = '0'+_date;
+    }
+    if (month < 10) {
+        month = '0'+month;
+    }
+    return `${year}-${month}-${_date}`;
 }
 
 //form submit
@@ -72,28 +88,29 @@ form.addEventListener('submit', async (e) => {
         var date = new Date(startDate.value).toJSON();
         try {
             var creater = await axios.get(`/account/userdetail/${createrId}`);
+            creater = creater.data.data.Item;
             if (sessionStorage.getItem('editEventId') != undefined) {
                 console.log(sessionStorage.getItem('editEventId'));
                 await axios.put(`/events/event/${sessionStorage.getItem('editEventId')}`,{
-                    createrId : createrId,
-                    createrName : creater.data.user.name,
-                    eventName : eventName.value,
-                    duration : convDuration,
-                    durationFormat : timeFormat.value,
-                    startDate : date,
-                    noOfDays : parseInt(noOfDays.value),
-                    workingDays : daysTime,
+                    "userId" : createrId,
+                    "createrName" : creater.name,
+                    "eventName" : eventName.value,
+                    "duration" : convDuration,
+                    "durationFormat" : timeFormat.value,
+                    "startDate" : date,
+                    "noOfDays" : parseInt(noOfDays.value),
+                    "workingDays" : daysTime,
                 });
             }else{
                 await axios.post('/events/createEvent',{
-                    createrId : createrId,
-                    createrName : creater.data.user.name,
-                    eventName : eventName.value,
-                    duration : convDuration,
-                    durationFormat : timeFormat.value,
-                    startDate : date,
-                    noOfDays : parseInt(noOfDays.value),
-                    workingDays : daysTime,
+                    "userId" : createrId,
+                    "createrName" : creater.name,
+                    "eventName" : eventName.value,
+                    "duration" : convDuration,
+                    "durationFormat" : timeFormat.value,
+                    "startDate" : date,
+                    "noOfDays" : parseInt(noOfDays.value),
+                    "workingDays" : daysTime,
                 });
             }
             popup.innerHTML = 
@@ -105,6 +122,7 @@ form.addEventListener('submit', async (e) => {
             popup.style.visibility = 'visible';
             blurBg.style.visibility = 'visible';
         } catch (error) {
+            console.log(error);
             popup.innerHTML = 
             `<div>
                 <h1 style="color: #FF5252">Oops...!</h1>

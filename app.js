@@ -24,5 +24,5 @@ app.use(express.json());
 //routers
 app.use('/account', account);
 app.use('/events',event);
-// app.use('/slots', slots);
+app.use('/slots', slots);
 

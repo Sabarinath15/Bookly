@@ -28,13 +28,13 @@ const fetchEvent = async (eventId) => {
     try {
         let event = await axios.get(`/events/event/${eventId}`); //fetch event by slots
         slotsOfEvent = await axios.get(`/slots/${eventId}`);
-        slotsOfEvent = slotsOfEvent.data.slots;
-        event = event.data.event[0];
-        displayDetails(event);
-        datedetails = genDate(event.startDate, event.noOfDays);
-        workingdays = event.workingDays;
-        duration = event.duration;
-        renderCalendar(event);
+        slotsOfEvent = slotsOfEvent.data.items;
+        event = event.data.data.Item;
+        displayDetails(event.event);
+        datedetails = genDate(event.event.startDate, event.event.noOfDays);
+        workingdays = event.event.workingDays;
+        duration = event.event.duration;
+        renderCalendar();
     } catch (error) {
         console.log(error);
     }
@@ -191,8 +191,8 @@ const showSlots = (value) => {
 
 const checkIsBooked = (timeValue, dateValue) => {
     for (let i = 0; i < slotsOfEvent.length; i++) {
-        var tempDate = new Date(slotsOfEvent[i].slotDate);
-        if (slotsOfEvent[i].slotTime == timeValue && tempDate.getDate() == dateValue.getDate() && tempDate.getMonth() == dateValue.getMonth()) {
+        var tempDate = new Date(slotsOfEvent[i].slot.slotDate);
+        if (slotsOfEvent[i].slot.slotTime == timeValue && tempDate.getDate() == dateValue.getDate() && tempDate.getMonth() == dateValue.getMonth()) {
             return true;
         }
     }
