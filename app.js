@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 
 const account = require('./routers/userRoute'); //router for accounts login and signup
-const event =  require('./routers/eventRoute'); //router for events
+const event = require('./routers/eventRoute'); //router for events
 const slots = require('./routers/slotRoute'); //slots router
 
 //port
@@ -23,6 +23,6 @@ app.use(express.json());
 
 //routers
 app.use('/account', account);
-app.use('/events',event);
+app.use('/events', event);
 app.use('/slots', slots);
 

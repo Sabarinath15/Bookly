@@ -19,7 +19,7 @@ const createUser = async (req, res) => { //create user in db
             "email": req.body.email,
             "password": req.body.password,
         },
-    }
+    };
 
     docClient.put(params, (err, data) => {
         if (err) {
@@ -41,7 +41,7 @@ const checkUser = async (req, res) => { //check the user have acc.
         ExpressionAttributeValues: {
             ':emailVal': userMail,
         }
-    }
+    };
     docClient.query(params, (err, data) => {
         if (err) {
             console.log('Unable to get the User. Error : ', JSON.stringify(err, null, 2));
