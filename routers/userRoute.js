@@ -7,6 +7,6 @@ const { createUser, getUser, checkUser, getUserDetail } = require('../controller
 router.route('/newuser').post(createUser);
 router.route('/checkuser/:email').get(checkUser);
 router.route('/user/:email').get(getUser);
-router.route('/userdetail/:id').get(getUserDetail);
+router.route('/userdetail/:id&:email').get(getUserDetail);
 
 module.exports = router;

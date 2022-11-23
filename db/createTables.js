@@ -1,56 +1,42 @@
 const AWS = require('aws-sdk');
 
 AWS.config.update({
-    region : 'local',
-    endpoint : 'http://localhost:8000',
+    region: 'local',
+    endpoint: 'http://localhost:8000',
 });
 
 var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 
 
-//User table creation 
+//User table creation
 
 // var params = {
-    
-//     TableName : 'User',
-//     KeySchema : [
+
+//     TableName: 'User',
+//     KeySchema: [
 //         {
-//             AttributeName : 'id',
-//             KeyType : 'HASH',
+//             AttributeName: 'email', //partition key
+//             KeyType: 'HASH',
+//         },
+//         {
+//             AttributeName: 'id', //sort key
+//             KeyType: 'RANGE',
+//         },
+//     ],
+//     AttributeDefinitions: [
+//         {
+//             AttributeName: 'email',
+//             AttributeType: 'S',
+//         },
+//         {
+//             AttributeName: 'id',
+//             AttributeType: 'S',
 //         }
 //     ],
-//     AttributeDefinitions : [
-//         {
-//             AttributeName : 'id',
-//             AttributeType : 'S',
-//         },
-//         {
-//             AttributeName : 'email',
-//             AttributeType : 'S',
-//         },
-//     ],
-//     ProvisionedThroughput : {
-//         ReadCapacityUnits : 10,
-//         WriteCapacityUnits : 10,
+//     ProvisionedThroughput: {
+//         ReadCapacityUnits: 10,
+//         WriteCapacityUnits: 10,
 //     },
-//     GlobalSecondaryIndexes : [
-//         {
-//             IndexName : 'user_email',
-//             KeySchema : [
-//                 {
-//                     AttributeName : 'email',
-//                     KeyType : 'HASH',
-//                 }
-//             ],
-//             Projection : {
-//                 ProjectionType : 'ALL',
-//             },
-//             ProvisionedThroughput : {
-//                 ReadCapacityUnits : 10,
-//                 WriteCapacityUnits : 10,
-//             },
-//         }
-//     ]
 // };
 
 // dynamoDb.createTable(params, (err, data) => {
@@ -65,21 +51,25 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 //Events table creation
 
 // var params = {
-    
+
 //     TableName : 'Events',
 //     KeySchema : [
 //         {
-//             AttributeName : 'id',
+//             AttributeName : 'userId', //primary key
 //             KeyType : 'HASH',
+//         },
+//         {
+//             AttributeName : 'id', //sort key
+//             KeyType : 'RANGE',
 //         }
 //     ],
 //     AttributeDefinitions : [
 //         {
-//             AttributeName : 'id',
-//             AttributeType : 'S',
+//             AttributeName: 'userId',
+//             AttributeType: 'S',
 //         },
 //         {
-//             AttributeName : 'userId',
+//             AttributeName : 'id',
 //             AttributeType : 'S',
 //         },
 //     ],
@@ -87,24 +77,6 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 //         ReadCapacityUnits : 10,
 //         WriteCapacityUnits : 10,
 //     },
-//     GlobalSecondaryIndexes : [
-//         {
-//             IndexName : 'user_id',
-//             KeySchema : [
-//                 {
-//                     AttributeName : 'userId',
-//                     KeyType : 'HASH',
-//                 }
-//             ],
-//             Projection : {
-//                 ProjectionType : 'ALL',
-//             },
-//             ProvisionedThroughput : {
-//                 ReadCapacityUnits : 10,
-//                 WriteCapacityUnits : 10,
-//             },
-//         }
-//     ]
 // };
 
 // dynamoDb.createTable(params, (err, data) => {
@@ -119,46 +91,32 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 //Slots table creation
 
 // var params = {
-    
-//     TableName : 'Slots',
-//     KeySchema : [
+
+//     TableName: 'Slots',
+//     KeySchema: [
 //         {
-//             AttributeName : 'id',
-//             KeyType : 'HASH',
+//             AttributeName: 'eventId',
+//             KeyType: 'HASH',
+//         },
+//         {
+//             AttributeName: 'userId',
+//             KeyType: 'RANGE',
 //         }
 //     ],
-//     AttributeDefinitions : [
+//     AttributeDefinitions: [
 //         {
-//             AttributeName : 'id',
-//             AttributeType : 'S',
+//             AttributeName: 'eventId',
+//             AttributeType: 'S',
 //         },
 //         {
-//             AttributeName : 'eventId',
-//             AttributeType : 'S',
+//             AttributeName: 'userId',
+//             AttributeType: 'S',
 //         },
 //     ],
-//     ProvisionedThroughput : {
-//         ReadCapacityUnits : 10,
-//         WriteCapacityUnits : 10,
+//     ProvisionedThroughput: {
+//         ReadCapacityUnits: 10,
+//         WriteCapacityUnits: 10,
 //     },
-//     GlobalSecondaryIndexes : [
-//         {
-//             IndexName : 'event_id',
-//             KeySchema : [
-//                 {
-//                     AttributeName : 'eventId',
-//                     KeyType : 'HASH',
-//                 }
-//             ],
-//             Projection : {
-//                 ProjectionType : 'ALL',
-//             },
-//             ProvisionedThroughput : {
-//                 ReadCapacityUnits : 10,
-//                 WriteCapacityUnits : 10,
-//             },
-//         }
-//     ]
 // };
 
 // dynamoDb.createTable(params, (err, data) => {
