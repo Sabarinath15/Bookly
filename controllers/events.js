@@ -55,9 +55,7 @@ const getEventByUserId = async (req, res) => {
 const getAllEvents = async (req, res) => {
     params = {
         TableName: 'Events',
-    }
-
-    docClient.scan(params, onScan);
+    };
 
     const onScan = (err, data) => {
         if (err) {
@@ -73,6 +71,8 @@ const getAllEvents = async (req, res) => {
             }
         }
     }
+
+    docClient.scan(params, onScan);
 }
 
 const getEventById = async (req, res) => {
