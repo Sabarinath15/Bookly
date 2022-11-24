@@ -200,7 +200,8 @@ const displaySlots = (slots) => {
     var htmlslots = slots.map((slot) => {
         slot = slot.slot;
         var date = new Date(slot.slotDate);
-        return `<div class="slot">
+        if (date >= new Date()) {
+            return `<div class="slot">
             <div class="customerinfo">
                 <h3>${slot.name}</h3>
                 <p><i class="fa-solid fa-envelope"></i> ${slot.email}</p>
@@ -212,6 +213,10 @@ const displaySlots = (slots) => {
                 <p>${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}</p>
             </div>
             </div>`
+        } else {
+            return;
+        }
+
     });
 
     for (let i = 0; i < htmlslots.length; i++) {
