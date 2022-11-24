@@ -31,6 +31,14 @@ const queryItem = async (params) => {
     }
 }
 
+const scanItem = async (params) => {
+    try {
+        return await docClient.scan(params).promise();
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const deleteItem = async (params) => {
     try {
         return await docClient.delete(params).promise();
@@ -53,4 +61,5 @@ module.exports = {
     queryItem,
     deleteItem,
     updateItem,
+    scanItem,
 }

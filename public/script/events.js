@@ -1,6 +1,7 @@
 //onload
 window.onload = () => {
     sessionStorage.removeItem('eventId');
+    sessionStorage.removeItem('userId');
     fetchEvents();
 }
 
@@ -37,7 +38,7 @@ const displayEvents = (events) => {
                 <p><i class="fa-regular fa-clock"></i> ${time.duration} ${time.format}</p>
             </div>
             <div class="button">
-                <button onclick="showEvent('${event.id}')">Book</button>
+                <button onclick="showEvent('${event.id}', '${event.userId}')">Book</button>
             </div>
         </div>`
     });
@@ -49,26 +50,27 @@ const displayEvents = (events) => {
 
 //time generation function
 const getTime = (duration, format) => {
-    duration = format == 'hr' ? Math.trunc(duration/60) : duration;
+    duration = format == 'hr' ? Math.trunc(duration / 60) : duration;
     if (format == 'hr') {
         if (duration > 1) {
             format = 'Hours';
-        }else{
+        } else {
             format = 'Hour';
         }
-    }else{
+    } else {
         format = 'Minutes';
     }
 
     return {
-        'duration' : duration,
-        'format' : format,
+        'duration': duration,
+        'format': format,
     }
 }
 
 //showevent
 
-const showEvent = (id) => {
-    sessionStorage.setItem('eventId', id);
+const showEvent = (id, userId) => {
+    sessionStorage.setItem('eventId', JSON.stringify(id));
+    sessionStorage.setItem('userId', JSON.stringify(userId));
     location.href = '../pages/event.html';
 }

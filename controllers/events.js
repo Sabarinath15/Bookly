@@ -1,142 +1,134 @@
-const AWS = require('aws-sdk');
 const { v4: uuidv4 } = require('uuid');
-
-AWS.config.update({
-    region: 'local',
-    endpoint: 'http://localhost:8000',
-}); //config region and endpoint
-
-var docClient = new AWS.DynamoDB.DocumentClient(); //instance of doc client
+const {
+    createItem,
+    getItem,
+    queryItem,
+    deleteItem,
+    updateItem,
+    scanItem,
+} = require('../db/docClientActions');
 
 const createEvent = async (req, res) => {
-    var id = uuidv4();
-    var params = {
-        TableName: 'Events',
-        Item: {
-            "id": id,
-            "userId": req.body.userId,
-            "event": req.body,
+    try {
+        var id = uuidv4();
+        var params = {
+            TableName: 'Events',
+            Item: {
+                "id": id,
+                "userId": req.body.userId,
+                "event": req.body,
+            }
         }
+
+        await createItem(params);
+        res.status(201).json({ params });
+
+    } catch (error) {
+        res.status(500).json({ msg: err });
     }
-    docClient.put(params, (err, data) => {
-        if (err) {
-            console.log('Error : Cannot put item : ', JSON.stringify(err, null, 2));
-            res.status(500).json({ msg: err });
-        } else {
-            //console.log('New Event created successfully... ');
-            res.status(201).json({ id });
-        }
-    });
 }
 
 const getEventByUserId = async (req, res) => {
-    const { id: id } = req.params;
-    var params = {
-        TableName: 'Events',
-        IndexName: 'user_id',
-        KeyConditionExpression: 'userId = :id',
-        ExpressionAttributeValues: {
-            ':id': id,
-        }
-    }
+    try {
+        const { id: id } = req.params;
+        var params = {
+            TableName: 'Events',
+            KeyConditionExpression: 'userId = :id',
+            ExpressionAttributeValues: {
+                ':id': id,
+            }
+        };
 
-    docClient.query(params, (err, data) => {
-        if (err) {
-            console.log('Unable to get the User. Error : ', JSON.stringify(err, null, 2));
-            res.status(500).json({ msg: err });
-        } else {
-            //console.log('Events : ', data.Items);
-            var items = data.Items;
-            res.status(200).json({ items });
-        }
-    });
+        const data = await queryItem(params);
+        res.status(200).json({ data });
+
+    } catch (error) {
+        res.status(500).json({ msg: err });
+    }
 }
 
 const getAllEvents = async (req, res) => {
-    params = {
-        TableName: 'Events',
-    };
+    try {
+        params = {
+            TableName: 'Events',
+        };
 
-    const onScan = (err, data) => {
-        if (err) {
-            console.log('Unable to scan the table. Error :', JSON.stringify(err));
-            res.status(500).json({ msg: err });
-        } else {
-            //console.log('Scanning success...');
+        var data = await scanItem(params);
+        res.status(200).json({ data });
+        if (typeof data.LastEvaluatedKey != "undefined") {
+            params.ExclusiveStartKey = data.LastEvaluatedKey;
+            data = await scanItem(params);
             res.status(200).json({ data });
-            if (typeof data.LastEvaluatedKey != "undefined") {
-                //console.log("Scanning for more...");
-                params.ExclusiveStartKey = data.LastEvaluatedKey;
-                docClient.scan(params, onScan);
-            }
         }
-    }
 
-    docClient.scan(params, onScan);
+    } catch (error) {
+        res.status(500).json({ msg: err });
+    }
 }
 
 const getEventById = async (req, res) => {
-    const { id: id } = req.params;
-    var params = {
-        TableName: 'Events',
-        Key: {
-            'id': id,
-        }
-    };
+    try {
+        const { id: id, userId: userId } = req.params;
 
-    docClient.get(params, (err, data) => {
-        if (err) {
-            console.log('Unable to scan the table. Error :', JSON.stringify(err));
-            res.status(500).json({ msg: err });
-        } else {
-            //console.log('Event by Id :', data);
-            res.status(200).json({ data });
-        }
-    });
+        var params = {
+            TableName: 'Events',
+            Key: {
+                'id': id,
+                'userId': userId,
+            }
+        };
+
+        const data = await getItem(params);
+        res.status(200).json({ data });
+
+    } catch (error) {
+        res.status(500).json({ msg: err });
+    }
 }
 
 const deleteEventById = async (req, res) => {
-    const { id: id } = req.params;
-    var params = {
-        TableName: 'Events',
-        Key: {
-            'id': id,
-        },
-    }
+    try {
+        const { id: id, userId: userId } = req.params;
 
-    docClient.delete(params, (err, data) => {
-        if (err) {
-            console.log('Unable to delete the event. Error :', JSON.stringify(err));
-            res.status(500).json({ msg: err });
-        } else {
-            res.status(200).json({ data });
-        }
-    });
+        var params = {
+            TableName: 'Events',
+            Key: {
+                'id': id,
+                'userId': userId,
+            }
+        };
+
+        const data = await deleteItem(params);
+        res.status(200).json({ data });
+
+    } catch (error) {
+        res.status(500).json({ msg: err });
+    }
 }
 
 const updateEventById = async (req, res) => {
-    const { id: id } = req.params;
-    var params = {
-        TableName: 'Events',
-        Key: {
-            'id': id,
-        },
-        UpdateExpression: "set event = :body",
-        ExpressionAttributeValues: {
-            ":body": req.body,
-        },
-        ReturnValues: "UPDATED_NEW"
-    }
+    try {
+        const { id: id, userId: userId } = req.params;
 
-    docClient.update(params, (err, data) => {
-        if (err) {
-            console.log('Unable to update the event. Error :', JSON.stringify(err));
-            res.status(500).json({ msg: err });
-        } else {
-            //console.log('Event Updated...');
-            res.status(200).json({ data });
-        }
-    });
+        var params = {
+            TableName: 'Events',
+            Key: {
+                'id': id,
+                'userId': userId,
+            },
+            UpdateExpression: "set event = :body",
+            ExpressionAttributeValues: {
+                ":body": req.body,
+            },
+            ReturnValues: "UPDATED_NEW",
+        };
+
+        const data = await updateItem(params);
+        res.status(200).json({ data });
+
+    } catch (error) {
+        res.status(500).json({ msg: err });
+    }
 }
 
 

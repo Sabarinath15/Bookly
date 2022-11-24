@@ -13,7 +13,7 @@ const createForm = document.querySelector('#createForm');
 const loginForm = document.querySelector('#loginForm');
 
 //form container
-const createCon =  document.querySelector('.create-acc');
+const createCon = document.querySelector('.create-acc');
 const loginCon = document.querySelector('.login-acc');
 //container change buttons
 const login = document.querySelector('#login');
@@ -51,15 +51,16 @@ createForm.addEventListener('submit', async (e) => {
             const haveAcc = await axios.get(`/account/checkuser/${email.value}`); //checking the user has account
             if (!haveAcc.data.have) {
                 const user = await axios.post('/account/newuser', {
-                    "name" : orgName.value,
-                    "email" : email.value,
-                    "password" : password.value
+                    "name": orgName.value,
+                    "email": email.value,
+                    "password": password.value
                 }); //Store the valid user data
                 console.log(user);
                 sessionStorage.setItem('userId', JSON.stringify(user.data.id)); // storing the user id in local
+                sessionStorage.setItem('email', JSON.stringify(user['email'])); // storing the user email in the local
                 createError.style.display = 'none';
                 location.href = '../pages/dashboard.html'; //navigate to dashboard
-            }else{
+            } else {
                 createError.innerHTML = 'The email is already exist, please Login.';
                 createError.style.display = 'block';
                 orgName.value = '';
@@ -91,13 +92,14 @@ loginForm.addEventListener('submit', async (e) => {
                 user = user.data.data.Items[0];
                 if (user.password == logPassword.value && user.email == logEmail.value) {
                     sessionStorage.setItem('userId', JSON.stringify(user['id'])); //store the user id in local
+                    sessionStorage.setItem('email', JSON.stringify(user['email']));
                     loginError.style.display = 'none';
                     location.href = '../pages/dashboard.html'; //navigate to dashboard
-                }else{
+                } else {
                     loginError.innerHTML = 'The password is incorrect.';
                     loginError.style.display = 'block';
                 }
-            }else{
+            } else {
                 loginError.innerHTML = 'The email is not registered, please Signup.';
                 loginError.style.display = 'block';
                 logEmail.value = '';
@@ -155,7 +157,7 @@ function createInputCheck() {
     return check;
 }
 //onchange for create form
-function OnChange(){
+function OnChange() {
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (orgName.value != '') {
         nameErr.style.display = 'none';
@@ -192,7 +194,7 @@ function loginInputCheck() {
 }
 
 //onchange for login form
-function OnChangeLogin(){
+function OnChangeLogin() {
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (logEmail.value.match(validRegex)) {
         logEmailErr.style.display = 'none';

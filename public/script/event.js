@@ -1,8 +1,10 @@
 //onload
-let eventId;
+let eventId,
+    userId;
 window.onload = () => {
-    eventId = sessionStorage.getItem('eventId');
-    fetchEvent(eventId);
+    eventId = JSON.parse(sessionStorage.getItem('eventId'));
+    userId = JSON.parse(sessionStorage.getItem('userId'));
+    fetchEvent(eventId, userId);
 }
 
 //elements
@@ -24,11 +26,11 @@ let slotsOfEvent; //slots of the event
 var duration;
 
 //fetch the event details
-const fetchEvent = async (eventId) => {
+const fetchEvent = async (eventId, userId) => {
     try {
-        let event = await axios.get(`/events/event/${eventId}`); //fetch event by slots
+        let event = await axios.get(`/events/event/${eventId}&${userId}`); //fetch event by slots
         slotsOfEvent = await axios.get(`/slots/${eventId}`);
-        slotsOfEvent = slotsOfEvent.data.items;
+        slotsOfEvent = slotsOfEvent.data.data.Items;
         event = event.data.data.Item;
         displayDetails(event.event);
         datedetails = genDate(event.event.startDate, event.event.noOfDays);
@@ -44,7 +46,7 @@ const fetchEvent = async (eventId) => {
 
 const displayDetails = (event) => {
     var time = getTime(event.duration, event.durationFormat);
-    eventName.innerHTML= event.eventName;
+    eventName.innerHTML = event.eventName;
     createrName.innerHTML = event.createrName;
     eventDuration.innerHTML = `<i class="fa-regular fa-clock"></i> ${time.duration} ${time.format}`;
     formeventName.innerHTML = event.eventName;
@@ -54,55 +56,55 @@ const displayDetails = (event) => {
 
 //time generation function
 const getTime = (duration, format) => {
-    duration = format == 'hr' ? Math.trunc(duration/60) : duration;
+    duration = format == 'hr' ? Math.trunc(duration / 60) : duration;
     if (format == 'hr') {
         if (duration > 1) {
             format = 'Hours';
-        }else{
+        } else {
             format = 'Hour';
         }
-    }else{
+    } else {
         format = 'Minutes';
     }
 
     return {
-        'duration' : duration,
-        'format' : format,
+        'duration': duration,
+        'format': format,
     }
 }
 
 //Calendar js
 const daysTag = document.querySelector(".days"),
-currentDate = document.querySelector(".current-date"),
-prevNextIcon = document.querySelectorAll(".icons i");
+    currentDate = document.querySelector(".current-date"),
+    prevNextIcon = document.querySelectorAll(".icons i");
 // getting new date, current year and month
 let date = new Date(),
-currYear = date.getFullYear(),
-currMonth = date.getMonth();
+    currYear = date.getFullYear(),
+    currMonth = date.getMonth();
 
 // storing full name of all months in array
-const months = ["January", "February", "March", "April", "May", "June", "July","August", "September", "October", "November", "December"];
-const monthShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul","Aug", "Sep", "Oct", "Nov", "Dec"];
-              
+const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+const monthShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const weekDays = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
 const renderCalendar = () => {
-    
+
     let firstDayofMonth = new Date(currYear, currMonth, 1).getDay(), // getting first day of month
-    lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate(), // getting last date of month
-    lastDayofMonth = new Date(currYear, currMonth, lastDateofMonth).getDay(), // getting last day of month
-    lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate(); // getting last date of previous month
+        lastDateofMonth = new Date(currYear, currMonth + 1, 0).getDate(), // getting last date of month
+        lastDayofMonth = new Date(currYear, currMonth, lastDateofMonth).getDay(), // getting last day of month
+        lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate(); // getting last date of previous month
     let liTag = "";
     for (let i = firstDayofMonth; i > 0; i--) { // creating li of previous month last days
         liTag += `<li class="inactive">${lastDateofLastMonth - i + 1}</li>`;
     }
-    for (let i = 1; i <= lastDateofMonth; i++) { 
+    for (let i = 1; i <= lastDateofMonth; i++) {
         let isToday = i === date.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear() ? "active" : "";
         var current = new Date(currYear, currMonth, i);
         var yestDay = new Date();
-        yestDay.setDate(yestDay.getDate()-1);
+        yestDay.setDate(yestDay.getDate() - 1);
         if (current >= datedetails.startDate && current <= datedetails.endDate && weekDays[current.getDay()] in workingdays && current > yestDay) {
             liTag += `<li class="${isToday} available" onclick="showSlots(${i})">${i}</li>`;
-        }else{
+        } else {
             liTag += `<li class="${isToday}">${i}</li>`;
         }
     }
@@ -116,7 +118,7 @@ const renderCalendar = () => {
 prevNextIcon.forEach(icon => { // getting prev and next icons
     icon.addEventListener("click", () => {
         currMonth = icon.id === "prev" ? currMonth - 1 : currMonth + 1;
-        if(currMonth < 0 || currMonth > 11) {
+        if (currMonth < 0 || currMonth > 11) {
             date = new Date(currYear, currMonth);
             currYear = date.getFullYear(); // updating current year with new date year
             currMonth = date.getMonth(); // updating current month with new date month
@@ -134,8 +136,8 @@ const genDate = (start, noOfDays) => {
     var milisec = (noOfDays * 1000 * 3600 * 24) + newDate.getTime();
     var endDate = new Date(milisec);
     return {
-        "startDate" : newDate,
-        "endDate" : endDate,
+        "startDate": newDate,
+        "endDate": endDate,
     }
 }
 
@@ -145,42 +147,42 @@ const showSlots = (value) => {
     theDate = new Date(currYear, currMonth, value);
     var day = weekDays[theDate.getDay()];
     selectedDate.innerHTML = `${value} ${monthShort[currMonth]} ${currYear}`;
-    var start = parseInt(workingdays[day]['start-time'].substr(0,2)) * 60 + parseInt(workingdays[day]['start-time'].substr(3, 5));
-    var end = parseInt(workingdays[day]['end-time'].substr(0,2)) * 60 + parseInt(workingdays[day]['end-time'].substr(3, 5)) * 60;
+    var start = parseInt(workingdays[day]['start-time'].substr(0, 2)) * 60 + parseInt(workingdays[day]['start-time'].substr(3, 5));
+    var end = parseInt(workingdays[day]['end-time'].substr(0, 2)) * 60 + parseInt(workingdays[day]['end-time'].substr(3, 5)) * 60;
     var meridiem = ' AM';
     var slots = document.getElementById('slots');
     slots.innerHTML = '';
-    for (let i = start; i <= end; i += duration){
+    for (let i = start; i < end; i += duration) {
         if (i >= 720) {
             meridiem = ' PM';
         }
         var time = '';
-        if (Math.trunc(i/60) > 12) {
-            time += Math.trunc(i/60)-12;
-        }else{
-            time += Math.trunc(i/60);
+        if (Math.trunc(i / 60) > 12) {
+            time += Math.trunc(i / 60) - 12;
+        } else {
+            time += Math.trunc(i / 60);
         }
         time += ':';
-        if (i%60 == 0) {
+        if (i % 60 == 0) {
             time += '00';
-        }else{
+        } else {
             time += i % 60;
         }
         time += meridiem;
 
         var input_ele = document.createElement('input');
-        input_ele.setAttribute('type','radio');
-        input_ele.setAttribute('name','times');
-        input_ele.setAttribute('id',time);
-        input_ele.setAttribute('value',time);
+        input_ele.setAttribute('type', 'radio');
+        input_ele.setAttribute('name', 'times');
+        input_ele.setAttribute('id', time);
+        input_ele.setAttribute('value', time);
         if (checkIsBooked(time, theDate)) {
             input_ele.disabled = true;
         }
         var label_ele = document.createElement('label');
-        label_ele.setAttribute('for',time);
+        label_ele.setAttribute('for', time);
         label_ele.innerText = time;
 
-        
+
         slots.appendChild(input_ele);
         slots.appendChild(label_ele);
     }
@@ -220,7 +222,7 @@ bookingForm.addEventListener('click', () => {
         popup.style.display = 'block';
         slotTime.innerHTML = document.querySelector('input[name="times"]:checked').value;
         slotDate.innerHTML = `${theDate.getDate()} ${monthShort[currMonth]} ${currYear}`;
-    }else{
+    } else {
         slotError.style.display = 'block';
     }
 });
@@ -241,13 +243,13 @@ userForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (inputCheck()) {
         try {
-            await axios.post('/slots/bookslot',{
-                eventId : eventId,
-                slotDate : theDate,
-                slotTime : document.querySelector('input[name="times"]:checked').value,
-                name : userName.value,
-                email : email.value,
-                contact : mobilNo.value
+            await axios.post('/slots/bookslot', {
+                eventId: eventId,
+                slotDate: theDate,
+                slotTime: document.querySelector('input[name="times"]:checked').value,
+                name: userName.value,
+                email: email.value,
+                contact: mobilNo.value
             });
             userForm.style.display = 'none';
             successmsg.style.display = 'block';
@@ -303,7 +305,7 @@ function inputCheck() {
     return check;
 }
 //onchange for create form
-function OnChange(){
+function OnChange() {
     var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
     if (userName.value != '') {
         nameErr.style.display = 'none';

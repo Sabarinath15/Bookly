@@ -12,7 +12,7 @@ window.onload = () => {
 const form = document.querySelector('#form'); // create form
 
 //input elements
-var eventName =  document.querySelector('#eventName');
+var eventName = document.querySelector('#eventName');
 var duration = document.querySelector('#duration');
 var timeFormat = document.querySelector('#time-format');
 var startDate = document.querySelector('#start-date');
@@ -35,7 +35,9 @@ var blurBg = document.querySelector('.blur');
 //edit the event 
 const editForm = async (eventId) => {
     try {
-        var event = await axios.get(`/events/event/${eventId}`);
+        var userId = JSON.parse(sessionStorage.getItem('userId'));
+        var event = await axios.get(`/events/event/${eventId}&${userId}`);
+        console.log(event);
         event = event.data.data.Item.event;
         changeFileds(event);
     } catch (error) {
@@ -53,8 +55,8 @@ const changeFileds = (event) => {
     for (const day in event.workingDays) {
         var input = document.querySelector(`#${day}`);
         input.disabled = false;
-        var start_time = document.querySelector('#'+day+'-start-time');
-        var end_time = document.querySelector('#'+day+'-end-time');
+        var start_time = document.querySelector('#' + day + '-start-time');
+        var end_time = document.querySelector('#' + day + '-end-time');
         start_time.value = event.workingDays[day]['start-time'];
         end_time.value = event.workingDays[day]['end-time'];
     }
@@ -68,10 +70,10 @@ const dateformat = (startDate) => {
     month += 1;
     var year = date.getFullYear();
     if (_date < 10) {
-        _date = '0'+_date;
+        _date = '0' + _date;
     }
     if (month < 10) {
-        month = '0'+month;
+        month = '0' + month;
     }
     return `${year}-${month}-${_date}`;
 }
@@ -82,39 +84,38 @@ form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     if (checkInput()) {
-        //console.log(eventName.value, parseInt(duration.value), timeFormat.value, new Date(startDate.value).toJSON(), parseInt(noOfDays.value), daysTime);
-        var createrId = JSON.parse(sessionStorage.getItem('userId'));
+        var userId = JSON.parse(sessionStorage.getItem('userId'));
+        var email = JSON.parse(sessionStorage.getItem('email'));
         var convDuration = timeFormat.value == "min" ? parseInt(duration.value) : parseInt(duration.value) * 60;
         var date = new Date(startDate.value).toJSON();
         try {
-            var creater = await axios.get(`/account/userdetail/${createrId}`);
-            creater = creater.data.data.Item;
+            var creater = await axios.get(`/account/user/${email}`);
+            creater = creater.data.data.Items[0];
             if (sessionStorage.getItem('editEventId') != undefined) {
-                console.log(sessionStorage.getItem('editEventId'));
-                await axios.put(`/events/event/${sessionStorage.getItem('editEventId')}`,{
-                    "userId" : createrId,
-                    "createrName" : creater.name,
-                    "eventName" : eventName.value,
-                    "duration" : convDuration,
-                    "durationFormat" : timeFormat.value,
-                    "startDate" : date,
-                    "noOfDays" : parseInt(noOfDays.value),
-                    "workingDays" : daysTime,
+                await axios.put(`/events/event/${sessionStorage.getItem('editEventId')}&${userId}`, {
+                    "userId": userId,
+                    "createrName": creater.name,
+                    "eventName": eventName.value,
+                    "duration": convDuration,
+                    "durationFormat": timeFormat.value,
+                    "startDate": date,
+                    "noOfDays": parseInt(noOfDays.value),
+                    "workingDays": daysTime,
                 });
-            }else{
-                await axios.post('/events/createEvent',{
-                    "userId" : createrId,
-                    "createrName" : creater.name,
-                    "eventName" : eventName.value,
-                    "duration" : convDuration,
-                    "durationFormat" : timeFormat.value,
-                    "startDate" : date,
-                    "noOfDays" : parseInt(noOfDays.value),
-                    "workingDays" : daysTime,
+            } else {
+                await axios.post('/events/createEvent', {
+                    "userId": userId,
+                    "createrName": creater.name,
+                    "eventName": eventName.value,
+                    "duration": convDuration,
+                    "durationFormat": timeFormat.value,
+                    "startDate": date,
+                    "noOfDays": parseInt(noOfDays.value),
+                    "workingDays": daysTime,
                 });
             }
-            popup.innerHTML = 
-            `<div>
+            popup.innerHTML =
+                `<div>
                 <h1>Successfull!</h1>
                 <p>Event was created and scheduled successfully.</p>
             </div>
@@ -123,8 +124,8 @@ form.addEventListener('submit', async (e) => {
             blurBg.style.visibility = 'visible';
         } catch (error) {
             console.log(error);
-            popup.innerHTML = 
-            `<div>
+            popup.innerHTML =
+                `<div>
                 <h1 style="color: #FF5252">Oops...!</h1>
                 <p>Something went wrong, please try again.</p>
             </div>
@@ -147,28 +148,28 @@ function checkInput() {
     if (duration.value === '') {
         durationErr.style.display = 'block';
         check = false;
-    }else if(isNaN(duration.value)) {
+    } else if (isNaN(duration.value)) {
         durationErr.innerHTML = 'The duration must be a number.';
         durationErr.style.display = 'block';
         check = false;
     }
     if (startDate.value === '') {
         startDateErr.style.display = 'block';
-        check =  false;
-    }else if (startDate.value < new Date()) {
+        check = false;
+    } else if (startDate.value < new Date()) {
         startDateErr.innerHTML = 'The date must not be in past.';
         startDateErr.style.display = 'block';
-        check =  false;
+        check = false;
     }
 
     if (noOfDays.value === '') {
         daysErr.style.display = 'block';
         check = false;
-    }else if (noOfDays.value < 1) {
+    } else if (noOfDays.value < 1) {
         daysErr.innerHTML = 'The no. of days must be 1 or more.';
         daysErr.style.display = 'block';
         check = false;
-    }else if (noOfDays > 60) {
+    } else if (noOfDays > 60) {
         daysErr.innerHTML = 'The no. of days must not be greater than 60 days.';
         daysErr.style.display = 'block';
         check = false;
@@ -176,14 +177,14 @@ function checkInput() {
 
     for (let i = 0; i < days.length; i++) {
         if (days[i].checked) {
-            var start_time = document.querySelector('#'+days[i].value+'-start-time').value;
-            var end_time = document.querySelector('#'+days[i].value+'-end-time').value;
+            var start_time = document.querySelector('#' + days[i].value + '-start-time').value;
+            var end_time = document.querySelector('#' + days[i].value + '-end-time').value;
             if (start_time < end_time) {
-               daysTime[days[i].value] = {
-                'start-time' : start_time,
-                'end-time' : end_time,
-               }
-            }else{
+                daysTime[days[i].value] = {
+                    'start-time': start_time,
+                    'end-time': end_time,
+                }
+            } else {
                 timeErr.style.display = 'block';
                 check = false;
             }
@@ -229,7 +230,7 @@ function enableTime(id) {
     if (day.checked) {
         start.removeAttribute('disabled');
         end.removeAttribute('disabled');
-    }else{
+    } else {
         start.setAttribute('disabled', true);
         end.setAttribute('disabled', true);
     }

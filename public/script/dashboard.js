@@ -6,23 +6,24 @@ create.addEventListener('click', () => {
 })
 
 //Onload
-var createrId;
+var userId;
 window.onload = () => {
     if (sessionStorage.getItem('userId') == undefined) {
         location.href = '../index.html';
     }
-    createrId = JSON.parse(sessionStorage.getItem('userId'));
+    userId = JSON.parse(sessionStorage.getItem('userId'));
+    email = JSON.parse(sessionStorage.getItem('email'));
     sessionStorage.removeItem('editEventId');
-    fetchEvents(createrId);
-    fetchUser(createrId);
+    fetchEvents(userId);
+    fetchUser(email);
 }
 
 //elemnts
 var eventsCon = document.querySelector('.events'); //event container
 var eventCount = document.querySelector('#eventcount'); //event count
 var profileBtn = document.querySelector('#profile'); //profile button
-var profileCard =  document.querySelector('.profileCard'); //profile card
-var logoutBtn =  document.querySelector('#logout-btn'); //logout confg button
+var profileCard = document.querySelector('.profileCard'); //profile card
+var logoutBtn = document.querySelector('#logout-btn'); //logout confg button
 var popup = document.querySelector('.popup'); //popup
 var popupContent = document.querySelector('.content'); //popup content
 var userName = document.querySelector('#userName');
@@ -30,19 +31,19 @@ var userEmail = document.querySelector('#userEmail');
 
 
 
-const fetchEvents = async (createrId) => {
+const fetchEvents = async (userId) => {
     try {
-        var events = await axios.get(`/events/${createrId}`);
-        displayEvents(events.data.items);
+        var events = await axios.get(`/events/${userId}`);
+        displayEvents(events.data.data.Items);
     } catch (error) {
         console.log(error);
     }
 }
 
-const fetchUser = async (userId) => {
+const fetchUser = async (email) => {
     try {
-        var user = await axios.get(`/account/userdetail/${userId}`);
-        user = user.data.data.Item;
+        var user = await axios.get(`/account/user/${email}`);
+        user = user.data.data.Items[0];
         userName.innerHTML = user.name;
         userEmail.innerHTML = user.email;
     } catch (error) {
@@ -76,11 +77,11 @@ const displayEvents = (events) => {
                 <button id="delete" onclick="deleteEvent('${eventId}')"><i class="fa-solid fa-trash-can"></i></button>
             </div>
         </div>`
-    }); 
+    });
     for (let i = 0; i < htmlevents.length; i++) {
         eventsCon.innerHTML += htmlevents[i];
     }
-    
+
 }
 
 
@@ -92,31 +93,31 @@ const genDate = (startDate, noOfDays) => {
     var milisec = (noOfDays * 1000 * 3600 * 24) + date.getTime();
     var endDate = new Date(milisec);
     return {
-        "startDate" : date.getDate(),
-        "startMon" : months[date.getMonth()],
-        "startYear" : date.getFullYear(),
-        "endDate" : endDate.getDate(),
-        "endMon" : months[endDate.getMonth()],
-        "endYear" : endDate.getFullYear(),
+        "startDate": date.getDate(),
+        "startMon": months[date.getMonth()],
+        "startYear": date.getFullYear(),
+        "endDate": endDate.getDate(),
+        "endMon": months[endDate.getMonth()],
+        "endYear": endDate.getFullYear(),
     }
 }
 
 //time generation function
 const getTime = (duration, format) => {
-    duration = format == 'hr' ? Math.trunc(duration/60) : duration;
+    duration = format == 'hr' ? Math.trunc(duration / 60) : duration;
     if (format == 'hr') {
         if (duration > 1) {
             format = 'Hours';
-        }else{
+        } else {
             format = 'Hour';
         }
-    }else{
+    } else {
         format = 'Minutes';
     }
 
     return {
-        'duration' : duration,
-        'format' : format,
+        'duration': duration,
+        'format': format,
     }
 }
 
@@ -127,7 +128,7 @@ profileBtn.addEventListener('click', () => {
     if (!isVisible) {
         profileCard.style.display = 'block';
         isVisible = !isVisible;
-    }else{
+    } else {
         profileCard.style.display = 'none';
         isVisible = !isVisible;
     }
@@ -141,7 +142,7 @@ logoutBtn.addEventListener('click', () => {
             <button id="cancel">Cancel</button>
             <button id="logout">Logout</button>
         </div>`;
-    
+
     var cancel = document.querySelector('#cancel'); //cancek button for logout
     var logout = document.querySelector('#logout'); //logout button
 
@@ -149,10 +150,11 @@ logoutBtn.addEventListener('click', () => {
         popup.style.display = 'none';
         profileCard.style.display = 'none';
     });
-    
+
     //logout
     logout.addEventListener('click', () => {
         sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('email');
         location.href = '../index.html';
     })
 });
@@ -163,7 +165,7 @@ var prevClick = '';
 const eventDetail = async (eventId) => {
     try {
         var slots = await axios.get(`/slots/${eventId}`);
-        slots = slots.data.items;
+        slots = slots.data.data.Items;
         displaySlots(slots);
         if (prevClick != '') {
             var prev = document.getElementById(prevClick);
@@ -225,7 +227,7 @@ const isBooked = async (eventId) => {
     } catch (error) {
         console.log(error);
     }
-    if (slots.data.items.length == 0) {
+    if (slots.data.data.Items.length == 0) {
         return true;
     }
     return false;
@@ -237,7 +239,7 @@ const editEvent = async (eventId) => {
     if (await isBooked(eventId)) {
         sessionStorage.setItem('editEventId', eventId);
         location.href = '../pages/createevent.html';
-    }else{
+    } else {
         popupContent.innerHTML = `
         <h3>Can not edit this event.</h3>
         <p>Some slots are booked in this event.</p>
@@ -245,7 +247,7 @@ const editEvent = async (eventId) => {
             <button id="ok">Okey</button>
         </div>`;
         popup.style.display = 'block';
-        document.querySelector('#ok').addEventListener('click',() => {
+        document.querySelector('#ok').addEventListener('click', () => {
             popup.style.display = 'none';
         });
     }
@@ -263,15 +265,15 @@ const deleteEvent = async (eventId) => {
             <button id="deletebtn">Delete</button>
         </div>`;
         popup.style.display = 'block';
-        document.querySelector('#deletebtn').addEventListener('click', async() => {
-            await axios.delete(`/events/event/${eventId}`);
+        document.querySelector('#deletebtn').addEventListener('click', async () => {
+            await axios.delete(`/events/event/${eventId}&${userId}`);
             popup.style.display = 'none';
             window.location.reload();
         });
         cancel.addEventListener('click', () => {
             popup.style.display = 'none';
         });
-    }else{
+    } else {
         popupContent.innerHTML = `
         <h3>Can not delete this event.</h3>
         <p>Some slots are booked in this event.</p>
@@ -279,7 +281,7 @@ const deleteEvent = async (eventId) => {
             <button id="ok">Okey</button>
         </div>`;
         popup.style.display = 'block';
-        document.querySelector('#ok').addEventListener('click',() => {
+        document.querySelector('#ok').addEventListener('click', () => {
             popup.style.display = 'none';
         });
     }

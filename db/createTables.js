@@ -99,9 +99,9 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 //             KeyType: 'HASH',
 //         },
 //         {
-//             AttributeName: 'userId',
+//             AttributeName: 'id',
 //             KeyType: 'RANGE',
-//         }
+//         },
 //     ],
 //     AttributeDefinitions: [
 //         {
@@ -109,7 +109,7 @@ var dynamoDb = new AWS.DynamoDB(); //dynamodb instance
 //             AttributeType: 'S',
 //         },
 //         {
-//             AttributeName: 'userId',
+//             AttributeName: 'id',
 //             AttributeType: 'S',
 //         },
 //     ],

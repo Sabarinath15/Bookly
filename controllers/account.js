@@ -1,10 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const {
     createItem,
-    getItem,
-    queryItem,
-    deleteItem,
-    updateItem, } = require('../db/docClientActions');
+    queryItem, } = require('../db/docClientActions');
 
 
 const createUser = async (req, res) => { //create user in db
@@ -52,42 +49,18 @@ const checkUser = async (req, res) => { //check the user have acc.
 
 const getUser = async (req, res) => { //get the user by email
     try {
-        const { email: email, id: id } = req.params;
+
+        const { email: email } = req.params;
         var params = {
             TableName: 'User',
-            Key: {
-                'email': email,
-                'id': id,
-            }
-        };
-
-        var data = await getItem(params);
-        if (data.Count != 0) {
-            res.status(200).json({ data });
-        } else {
-            throw error;
-        }
-    } catch (error) {
-        res.status(500).json({ msg: error });
-    }
-}
-
-const getUserDetail = async (req, res) => { //get the user by id
-    try {
-        const { id: id } = req.params;
-        var params = {
-            TableName: 'User',
-            KeyConditionExpression: 'id = :id',
+            KeyConditionExpression: 'email = :e',
             ExpressionAttributeValues: {
-                ':id': id,
+                ':e': email,
             }
         };
-
         const data = await queryItem(params);
         if (data.Count != 0) {
             res.status(200).json({ data });
-        } else {
-            throw error;
         }
     } catch (error) {
         res.status(500).json({ msg: error });
@@ -98,5 +71,4 @@ module.exports = {
     createUser,
     getUser,
     checkUser,
-    getUserDetail,
 }
